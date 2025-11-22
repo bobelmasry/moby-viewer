@@ -1,7 +1,7 @@
 "use client"
 
 import { Navbar } from '@/components/ui/shadcn-io/navbar-01';
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/utils/supabase/client"
@@ -21,10 +21,13 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import type { User } from "@supabase/supabase-js"
 
-function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const router = useRouter()
+
+export default function SignInPage() {
+    const [user, setUser] = useState<User | null>(null)
   const supabase = createClient()
+    const router = useRouter()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -36,23 +39,33 @@ function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
     setError(null)
     setLoading(true)
 
-    const { data, error } = await (await supabase).auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
     setLoading(false)
 
-    if (error) {
-      setError(error.message)
-    } else {
-      // Redirect to dashboard or homepage after successful login
-      router.push("/")
-    }
+    if (error) setError(error.message)
   }
 
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data } = await supabase.auth.getUser()
+      setUser(data.user)
+    }
+    loadUser()
+  }, [])
+  
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <>
+    <div className="relative md:w-3/4 w-full mx-auto">
+    <Navbar user={user} />
+    </div>
+    <div className="flex items-center justify-center bg-background p-4">
+
+    <div className={cn("flex mt-32 flex-col gap-6 w-2/4 h-3/4")}>
       <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -114,17 +127,6 @@ function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-export default function SignInPage() {
-  return (
-    <>
-    <div className="relative md:w-3/4 w-full mx-auto">
-    <Navbar />
-    </div>
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <LoginForm className="w-full max-w-md" />
     </div>
     </>
   )

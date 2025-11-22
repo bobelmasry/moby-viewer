@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import Link from 'next/link'
+import type { User } from "@supabase/supabase-js"
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -90,6 +91,7 @@ export interface Navbar01Props extends React.HTMLAttributes<HTMLElement> {
   ctaHref?: string;
   onSignInClick?: () => void;
   onCtaClick?: () => void;
+  user: User | null
 }
 
 // Default navigation links
@@ -98,7 +100,6 @@ const defaultNavigationLinks: Navbar01NavLink[] = [
   { href: '/games', label: 'Games' },
   { href: '/developers', label: 'Developers' },
   { href: '/publishers', label: 'Publishers' },
-  { href: '/about', label: 'About' },
 ];
 
 export const Navbar = React.forwardRef<HTMLElement, Navbar01Props>(
@@ -114,6 +115,7 @@ export const Navbar = React.forwardRef<HTMLElement, Navbar01Props>(
       ctaHref = '/get-started',
       onSignInClick,
       onCtaClick,
+      user,
       ...props
     },
     ref
@@ -231,6 +233,7 @@ export const Navbar = React.forwardRef<HTMLElement, Navbar01Props>(
             </div>
           </div>
           {/* Right side */}
+          {!user && 
           <div className="flex items-center gap-3">
             <Link
               className="text-sm font-medium hover:text-accent-foreground"
@@ -246,6 +249,18 @@ export const Navbar = React.forwardRef<HTMLElement, Navbar01Props>(
               </button>
             </Link>
           </div>
+        }
+        { user && 
+          <div className="flex items-center gap-3">
+            <Link href={"/account"}
+              className="text-sm font-medium px-4 h-9 inline-flex items-center justify-center rounded-md"
+            >
+              <button className='bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md cursor-pointer hover:shadow-md transition-shadow'>
+              My account
+              </button>
+            </Link>
+          </div>
+        }
         </div>
       </header>
     );

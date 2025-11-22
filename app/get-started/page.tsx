@@ -1,7 +1,7 @@
 "use client"
 
 import { Navbar } from "@/components/ui/shadcn-io/navbar-01"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/utils/supabase/client"
@@ -21,8 +21,10 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import type { User } from "@supabase/supabase-js"
 
-function SignupForm({ className, ...props }: React.ComponentProps<typeof Card>) {
+export default function SignUpPage() {
+
   const supabase = createClient()
   const router = useRouter()
 
@@ -33,6 +35,15 @@ function SignupForm({ className, ...props }: React.ComponentProps<typeof Card>) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+      async function loadUser() {
+        const { data } = await supabase.auth.getUser()
+        setUser(data.user)
+      }
+      loadUser()
+    }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -62,7 +73,12 @@ function SignupForm({ className, ...props }: React.ComponentProps<typeof Card>) 
   }
 
   return (
-    <Card className={cn("flex flex-col gap-6", className)} {...props}>
+    <>
+      <div className="relative md:w-3/4 w-full mx-auto">
+        <Navbar user={user} />
+      </div>
+      <div className="flex items-center justify-center bg-background p-4">
+        <Card className={"flex mt-16 flex-col gap-6 w-2/4 h-3/4"}>
       <CardHeader>
         <CardTitle>Create an account</CardTitle>
         <CardDescription>
@@ -148,17 +164,6 @@ function SignupForm({ className, ...props }: React.ComponentProps<typeof Card>) 
         </form>
       </CardContent>
     </Card>
-  )
-}
-
-export default function SignUpPage() {
-  return (
-    <>
-      <div className="relative md:w-3/4 w-full mx-auto">
-        <Navbar />
-      </div>
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <SignupForm className="w-full max-w-md" />
       </div>
     </>
   )
