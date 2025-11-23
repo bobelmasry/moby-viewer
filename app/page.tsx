@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import { Navbar } from '@/components/ui/shadcn-io/navbar-01';
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
@@ -17,8 +16,8 @@ export default function Home() {
       }
       loadUser()
     }, [])
-  console.log(user)
-  return (
+
+    return (
     <div>
       <div className="relative md:w-3/4 w-full mx-auto">
         <Navbar user={user} />

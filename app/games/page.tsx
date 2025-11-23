@@ -6,26 +6,9 @@ import { Navbar } from '@/components/ui/shadcn-io/navbar-01';
 import { columns } from "@/components/gameColumns";
 import type { User } from "@supabase/auth-js";
 import { useState, useEffect } from "react";
+import type { Game } from "@/utils/types";
 
 export default function GamePage () {
-
-    type Game = {
-  id: number;
-  game_name: string;
-  genre: string;
-  pacing: string;
-  setting: string;
-  business_model: string;
-  media_type: string;
-  maturity_rating: string;
-  moby_score: number;
-  critics_rating: number;
-  player_rating: number;
-  player_count: number;
-  perspective: string;
-  interface: string;
-  director: string;
-};
 
     const supabase = createClient();
     const [user, setUser] = useState<User | null>(null)
