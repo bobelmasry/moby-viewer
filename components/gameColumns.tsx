@@ -5,13 +5,24 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Game } from "@/utils/types";
 
-export const columns: ColumnDef<Game>[] = [
+type GameWithUserRating = Game & { userRating: number | null }
+
+export const columns: ColumnDef<GameWithUserRating>[] = [
   { accessorKey: "moby_score", header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Moby Score
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ), },
+  { accessorKey: "userRating", header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        User Rating
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ), },

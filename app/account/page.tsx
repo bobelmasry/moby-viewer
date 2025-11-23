@@ -65,7 +65,7 @@ useEffect(() => {
 
           <tbody className="divide-y divide-gray-200">
             {merged.map((mergedEntry) => ( 
-            <tr className="*:text-gray-900 *:first:font-medium">
+            <tr key={mergedEntry.game_name} className="*:text-gray-900 *:first:font-medium">
               <td className="px-3 py-2 whitespace-nowrap">{mergedEntry.game_name}</td>
               <td className="px-3 py-2 whitespace-nowrap">{mergedEntry.rating}</td>
             </tr>
