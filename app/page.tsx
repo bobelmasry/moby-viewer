@@ -164,12 +164,9 @@ useEffect(() => {
   const topByYear = getTopGames(groupedByYear)
 
   const genres = Array.from(new Set(games.map(game => game.genre).filter(Boolean)))
-
-  const platforms = Array.from(
-  new Set(releaseDates.map(r => r.platformName).filter(Boolean))
-)
-
-  console.log(filteredGames)
+  const platforms = Array.from(new Set(releaseDates.map(r => r.platformName).filter(Boolean)))
+  const developers = Array.from(new Set(gameDevelopers.map(r => r.developerID).filter(Boolean)))
+  const publishers = Array.from(new Set(gamePublishers.map(r => r.publisherID).filter(Boolean)))
 
 
     return (
@@ -232,8 +229,39 @@ useEffect(() => {
         ))}
       </select>
       </div>
+      {/* Developer dropdown */}
+      <div className="flex flex-col gap-2">
+      <label htmlFor="">Developer</label>
+      <select
+        value={selectedDeveloper ?? ''}
+        onChange={e => setSelectedDeveloper(e.target.value || undefined)}
+        className="border px-2 py-1"
+      >
+        <option value="">All Developers</option>
+        {developers.map(platform => (
+          <option key={platform} value={platform}>{platform}</option>
+        ))}
+      </select>
+      </div>
+      {/* Publisher dropdown */}
+      <div className="flex flex-col gap-2">
+      <label htmlFor="">Publisher</label>
+      <select
+        value={selectedPublisher ?? ''}
+        onChange={e => setSelectedPublisher(e.target.value || undefined)}
+        className="border px-2 py-1"
+      >
+        <option value="">All Publishers</option>
+        {publishers.map(platform => (
+          <option key={platform} value={platform}>{platform}</option>
+        ))}
+      </select>
+      </div>
       <div className="mt-8">
-        <button className='bg-gray-200 p-1 rounded-md' onClick={() => {setSelectedGenre(''); setSelectedPlatform('')}}>Reset</button>
+        <button className='bg-gray-200 p-1 rounded-md'
+        onClick={() => {setSelectedGenre(''); setSelectedPlatform(''); setSelectedDeveloper(''); setSelectedPublisher('')}}>
+          Reset
+        </button>
       </div>
     </div>
       <table className="w-3/4 h-3/4 mx-auto mt-8 mb-16 bg-gray-100 divide-y divide-gray-200">
