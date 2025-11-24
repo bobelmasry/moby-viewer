@@ -4,15 +4,17 @@ import { Navbar } from '@/components/ui/shadcn-io/navbar-01';
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
 import type { User } from "@supabase/auth-js";
-import type { Game, gameReleaseDates, gameDeveloper, gamePublisher } from '@/utils/types';
+import type { Game, gameReleaseDates, gameDeveloper, gamePublisher, publisher, developer } from '@/utils/types';
 
 export default function Home() {
   const supabase = createClient()
   const [user, setUser] = useState<User | null>(null)
   const [games, setGames] = useState<Game[]>([])
   const [releaseDates, setReleaseDates] = useState<gameReleaseDates[]>([])
-  const [gamePublishers, setPublishers] = useState<gamePublisher[]>([])
+  const [gamePublishers, setGamePublishers] = useState<gamePublisher[]>([])
   const [gameDevelopers, setGameDevelopers] = useState<gameDeveloper[]>([])
+  const [publisher, setPublisher] = useState<publisher[]>([])
+  const [developer, setDeveloper] = useState<developer[]>([])
 
   useEffect(() => {
       async function loadUser() {
@@ -42,14 +44,14 @@ export default function Home() {
     }
     getGameReleaseDates()
 
-    async function getPublishers(){
+    async function getGamePublishers(){
       const { data: publishers, error} = await supabase.from('gamePublisher').select('*')
-      setPublishers(publishers ?? [])
+      setGamePublishers(publishers ?? [])
       if (error){
         console.log(error)
       }
     }
-    getPublishers()
+    getGamePublishers()
 
     async function getGameDeveloper(){
       const { data: gameDevelopers, error} = await supabase.from('gameDeveloper').select('*')
@@ -59,6 +61,21 @@ export default function Home() {
       }
     }
     getGameDeveloper()
+
+    async function getDevelopers(){
+      const { data : developers, error} = await supabase.from('developer').select('*')
+      setDeveloper(developers ?? [])
+      if (error) {
+        console.log(error)
+      }
+    }
+    getDevelopers()
+
+    async function getPublishers(){
+      const { data : publishers, error} = await supabase.from('publisher').select('*')
+      setPublisher(publishers ?? [])
+    }
+    getPublishers()
     }, [])
 
     const gamesWithYear = games.map(game => {

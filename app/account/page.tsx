@@ -13,6 +13,8 @@ export default function Home() {
   const [games, setGames] = useState<Game[]>([])
   type UserRatingWithName = userRating & { game_name: string | null }
   const [merged, setMerged] = useState<UserRatingWithName[]>([])
+  const [selectedGame, setSelectedGame] = useState<number | ''>('')
+  const [newRating, setNewRating] = useState<number | ''>('')
 
   useEffect(() => {
   async function loadUser() {
@@ -36,20 +38,80 @@ useEffect(() => {
   loadUserRatings()
 }, [user])
 
-useEffect(() => {
-  const merged = userRatings.map(r => {
-    const game = games.find(g => g.id === r.gameID)
-    return { ...r, game_name: game ? game.game_name : null }
-  })
-  setMerged(merged)
-}, [userRatings, games])
+  useEffect(() => {
+    const merged = userRatings.map(r => {
+      const game = games.find(g => g.id === r.gameID)
+      return { ...r, game_name: game ? game.game_name : null }
+    })
+    setMerged(merged)
+  }, [userRatings, games])
+
+    async function handleAddRating() {
+    if (!user) return
+    if (!selectedGame || !newRating) return
+
+    const { error } = await supabase.from("userRating").insert({
+      userID: user.id,
+      gameID: selectedGame,
+      rating: newRating
+    })
+
+    if (error) {
+      console.error("Insert error:", error)
+      return
+    }
+
+    // Reload ratings
+    const { data } = await supabase
+      .from("userRating")
+      .select("*")
+      .eq("userID", user.id)
+
+    setUserRatings(data ?? [])
+    
+    // Clear inputs
+    setSelectedGame('')
+    setNewRating('')
+  }
 
   console.log(merged)
+
 
     return (
     <div>
       <div className="relative md:w-3/4 w-full mx-auto">
         <Navbar user={user} />
+      </div>
+      <div className="mt-12 mx-auto w-64 border p-4 rounded shadow">
+        <h2 className="text-xl font-semibold mb-3">Add Rating</h2>
+
+        <select
+          className="border px-2 py-1 w-full mb-2"
+          value={selectedGame}
+          onChange={e => setSelectedGame(Number(e.target.value))}
+        >
+          <option value="">Select Game</option>
+          {games.map(g => (
+            <option key={g.id} value={g.id}>{g.game_name}</option>
+          ))}
+        </select>
+
+        <input
+          type="number"
+          min={1}
+          max={10}
+          className="border px-2 py-1 w-full mb-2"
+          placeholder="Rating (1–10)"
+          value={newRating}
+          onChange={e => setNewRating(Number(e.target.value))}
+        />
+
+        <button
+          onClick={handleAddRating}
+          className="bg-blue-600 text-white px-3 py-1 rounded w-full"
+        >
+          Add Rating
+        </button>
       </div>
       <div className="ml-64 mt-12">
         <h1 className="text-4xl font-semibold">My ratings</h1>
